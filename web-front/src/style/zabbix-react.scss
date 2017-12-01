@@ -1,0 +1,172 @@
+/* @import "templates/font_ubuntu_mono"; */
+
+@import "templates/Header";
+@import "templates/Footer";
+@import "templates/HostConfig";
+@import "templates/HostGraph";
+
+body {
+  background-color: #fff;
+  /* https://www.transparenttextures.com/ */
+  /* background-image: url(../img/connected.png); */
+  /* font-family: "Ubuntu Mono"; */
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  font-size: 12px;
+}
+
+.App {
+  font-family: inherit;
+  font-size: inherit;
+  padding: 4px;
+}
+
+pre { 
+  font-family: inherit;
+  font-size: inherit;
+  margin: inherit;
+}
+
+a {
+  text-decoration: none
+}
+
+ul { 
+  padding-left: 20px;
+  padding-top: 10px;
+  margin: 1px;
+}
+li { 
+  font-family: inherit;
+  font-size: 14px;
+  padding: 2px;
+  margin: 2px;
+}
+
+div { 
+  font-family: inherit;
+  font-size: inherit;
+  margin: inherit;
+}
+
+form { 
+  font-family: inherit;
+  font-size: inherit;
+  margin: 1px;
+}
+
+input { 
+  font-family: inherit;
+  font-size: inherit;
+  background-color: #ffffff; 
+  border: 1px solid #999999;
+  border-radius: 4px;
+  margin: inherit;
+}
+
+textarea { 
+  font-family: inherit;
+  font-size: inherit;
+  background-color: #ffffff; 
+  border: 1px solid #999999;
+  color: #444444; 
+  margin: inherit;
+}
+
+select { 
+  font-family: inherit;
+  font-size: inherit;
+  background-color: #ffffff; 
+  border: 1px solid #999999;
+  border-radius: 4px; 
+  margin: inherit;
+}
+
+button { 
+  font-family: inherit;
+  font-size: inherit;
+  background-color: #EEEEEE; 
+  border: 1px solid #999999;
+  border-radius: 4px; 
+  margin: inherit;
+}
+
+i {
+  font-size: 10px;
+}
+
+strong {
+  font-size: 12px;
+}
+
+
+
+
+
+
+
+.display-none { 
+  display: none;
+}
+
+.std-win {
+  background: #fff;
+  border: 1px solid #999;
+  border-radius: 6px;
+  margin: 2px;
+  padding: 2px;
+  float: left;
+}
+
+.std-item {
+  background: #fff;
+  border: #ddd 1px solid;
+  border-radius: 6px;
+  margin: 2px;
+  padding: 2px;
+}
+.std-item-header {
+  background: #eee;
+  border: #999 0px solid;
+  border-radius: 4px;
+  margin: 0px;
+  padding: 4px;
+  font-size: 14px;
+}
+.std-item-header-small {
+  background: #eee;
+  border: #999 0px solid;
+  border-radius: 4px;
+  margin: 0px;
+  padding: 2px;
+  font-size: 13px;
+}
+
+.std-bttn {
+  background: #F5F5F5;
+}
+
+.get-bttn {
+  background: #61affe;
+  color: #fff;
+  border: 0px;
+}
+
+.add-bttn {
+  background: #49cc90;
+  color: #fff;
+  border: 0px;
+}
+
+.del-bttn {
+  background: #f93e3e;
+  color: #fff;
+  border: 0px;
+}
+
+.mod-bttn {
+  background: #fca130;
+  color: #fff;
+  border: 0px;
+}

@@ -1,0 +1,29 @@
+.Header {
+  text-align: center;
+}
+
+.Header-logo {
+  animation: Header-logo-spin infinite 20s linear;
+  height: 40px;
+}
+
+.Header-block {
+  text-align: center;
+  background-color: #222;
+  padding:0px;
+  color: white;
+}
+
+.Header-title {
+  font-size: 14px;
+  color: #eee;
+}
+
+.Header-intro {
+  font-size: large;
+}
+
+@keyframes Header-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

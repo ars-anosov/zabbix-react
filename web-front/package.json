@@ -1,0 +1,49 @@
+{
+  "name": "zabbix-react-front",
+  "version": "1.0.0",
+  "description": "React components for Zabbix interaction. Interacts by OpenAPI at zabbix-reactor server.",
+  "main": "gulpfile.js",
+  "scripts": {
+    "install-components": "cd src/js/components && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ars-anosov/zabbix-react.git"
+  },
+  "keywords": [
+    "Zabbix",
+    "React"
+  ],
+  "author": "Arseniy Anosov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ars-anosov/zabbix-react/issues"
+  },
+  "homepage": "https://github.com/ars-anosov/zabbix-react#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "babelify": "^8.0.0",
+    "browser-sync": "^2.18.13",
+    "browserify": "^14.5.0",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^4.0.0",
+    "gulp-clean-css": "^3.9.0",
+    "gulp-if": "^2.0.2",
+    "gulp-rigger": "^0.5.8",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.6.1",
+    "gulp-uglify": "^3.0.0",
+    "gulp-util": "^3.0.8",
+    "gulp-watch": "^4.3.11",
+    "rimraf": "^2.6.2",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "dependencies": {
+    "react": "^16.1.1",
+    "react-dom": "^16.1.1"
+  }
+}

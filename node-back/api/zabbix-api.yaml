@@ -1,0 +1,395 @@
+---
+swagger: '2.0'
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+info:
+  version: 1.0.0
+  title: zabbix-react
+  description: |
+    Сервис транслирует действия от React-компоненты в сторону Zabbix-API
+
+################################################################################
+#                  Host, Base Path, Schemes and Content Types                  #
+################################################################################
+host: 'localhost:8002'
+basePath: /v2api
+schemes:
+  - http
+produces:
+  - application/json
+consumes:
+  - application/json
+
+################################################################################
+#                                   Tags                                       #
+################################################################################
+tags:
+  - name: Configuration
+    description: Вкладка Configuration на Zabbix
+  - name: Data
+    description: Различные данные для анализа
+################################################################################
+#                                    Paths                                     #
+################################################################################
+paths:
+
+  /host:
+    get:
+      tags:
+        - Configuration
+      description: hosts list
+      operationId: host_get
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          description: token
+          required: true
+          type: string
+        - name: name
+          in: query
+          description: host name
+          required: false
+          type: string
+        - name: group
+          in: query
+          description: host group id
+          required: false
+          type: string
+      responses:
+        '200':
+          description: host list
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/host_getlist'
+        '202':
+          description: no list
+          schema:
+            $ref: '#/definitions/dummy'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/errorModel'
+      x-swagger-router-controller: Configuration
+    post:
+      tags:
+        - Configuration
+      description: host add 
+      operationId: host_post
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          description: token
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: |
+            В zabbix-reactor написана логика добавления хоста в Zabbix на базе двух параметров dns-адреса хоста и groupid.
+            Можно накрутить любую логику по своему желанию. См. controller "config_host_post.js".
+          required: true
+          schema:
+            $ref: '#/definitions/host_add'
+      responses:
+        '200':
+          description: host created
+          schema:
+            $ref: '#/definitions/dummy'
+        '202':
+          description: host not created
+          schema:
+            $ref: '#/definitions/dummy'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/errorModel'
+      x-swagger-router-controller: Configuration
+    put:
+      tags:
+        - Configuration
+      description: host update
+      operationId: host_put
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          description: token
+          required: true
+          type: string
+        - name: hostid
+          in: query
+          description: host id
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: host name
+          required: true
+          schema:
+            $ref: '#/definitions/host_update'
+      responses:
+        '200':
+          description: host updated
+          schema:
+            $ref: '#/definitions/dummy'
+        '202':
+          description: host not updated
+          schema:
+            $ref: '#/definitions/dummy'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/errorModel'
+      x-swagger-router-controller: Configuration
+    delete:
+      tags:
+        - Configuration
+      description: host delete
+      operationId: host_del
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          description: token
+          required: true
+          type: string
+        - name: hostid
+          in: query
+          description: host id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: host deleted
+          schema:
+            $ref: '#/definitions/dummy'
+        '202':
+          description: host not deleted
+          schema:
+            $ref: '#/definitions/dummy'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/errorModel'
+      x-swagger-router-controller: Configuration
+      
+  /hostgroup:
+    get:
+      tags:
+        - Configuration
+      description: hostgroup list
+      operationId: hostgroup_get
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          description: token
+          required: true
+          type: string
+        - name: name
+          in: query
+          description: hostgroup name
+          required: false
+          type: string
+      responses:
+        '200':
+          description: host group list
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/hostgroup'
+        '202':
+          description: no list
+          schema:
+            $ref: '#/definitions/dummy'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/errorModel'
+      x-swagger-router-controller: Configuration
+      
+    x-swagger-router-controller: Configuration
+
+  /hostlink:
+    get:
+      tags:
+        - Data
+      description: host links Object
+      operationId: hostlink_get
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - name: token
+          in: header
+          description: token
+          required: true
+          type: string
+        - name: layer
+          in: query
+          description: на каком уровне линки L1, L2, L3
+          required: true
+          type: string
+      responses:
+        '200':
+          description: hostlinks
+          schema:
+            $ref: '#/definitions/hostlinks'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/errorModel'
+      x-swagger-router-controller: Data
+      
+    x-swagger-router-controller: Data
+################################################################################
+#                                 Definitions                                  #
+################################################################################
+definitions:
+
+# host_add ------------------------------------------------------------------------
+  host_add:
+    type: object
+    properties:
+      dns:
+        type: string
+      groupid:
+        type: integer
+
+# host_update ------------------------------------------------------------------------
+  host_update:
+    type: object
+    properties:
+      description:
+        type: string
+      inventory:
+        type: object
+        properties:
+          notes:
+            type: string
+
+# host_list -------------------------------------------------------------------
+  host_getlist:
+    type: object
+    properties:
+      hostid:
+        type: string
+      host:
+        type: string
+      description:
+        type: string
+      interfaces:
+        type: array
+        items:
+          type: object
+          properties:
+            type:
+              type: string
+            main:
+              type: string
+            useip:
+              type: string
+            ip:
+              type: string
+            dns:
+              type: string
+            port:
+              type: string
+      groups:
+        type: array
+        items:
+         type: object
+         properties:
+          groupid:
+            type: string
+          name:
+            type: string
+      parentTemplates:
+        type: array
+        items:
+          type: object
+          properties:
+            templateid:
+              type: string
+            name:
+              type: string
+      inventory:
+        type: object
+        properties:
+          notes:
+            type: string
+
+# hostgroup ------------------------------------------------------------------------
+  hostgroup:
+    type: object
+    properties:
+      groupid:
+        type: string
+      name:
+        type: string
+
+# hostlinks -------------------------------------------------------------------
+  hostlinks:
+    type: object
+    properties:
+      nodes:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            group:
+              type: integer
+      links:
+        type: array
+        items:
+          type: object
+          properties:
+            source:
+              type: string
+            target:
+              type: string
+            value:
+              type: integer
+# System =======================================================================
+  errorModel:
+    type: object
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+
+  dummy:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string

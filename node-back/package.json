@@ -1,0 +1,30 @@
+{
+  "name": "zabbix-reactor",
+  "version": "1.0.1",
+  "main": "index.js",
+  "description": "OpenAPI for react components. Interacts with Zabbix-API.",
+  "scripts": {
+    "prestart": "npm install",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ars-anosov/zabbix-react.git"
+  },
+  "keywords": [
+    "Zabbix",
+    "Swagger"
+  ],
+  "author": "Arseniy Anosov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ars-anosov/zabbix-react/issues"
+  },
+  "homepage": "https://github.com/ars-anosov/zabbix-react#readme",
+  "dependencies": {
+    "connect": "^3.2.0",
+    "js-yaml": "^3.3.0",
+    "request": "^2.83.0",
+    "swagger-tools": "0.10.3"
+  }
+}
