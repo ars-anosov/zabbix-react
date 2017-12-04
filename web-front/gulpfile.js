@@ -111,7 +111,12 @@ gulp.task('jsx:build', function () {
     .pipe( gulp.dest(path.build.js) );
 
   // .jsx ONLY ONE file
-  browserify({entries: path.src.jsx, extensions: ['.jsx'], debug: false})   // debug заставляет browserify строить sourcemaps. На входе файл "path.src.jsx"
+  browserify({
+    entries: path.src.jsx,
+    extensions: ['.jsx'],
+    //noParse: [require.resolve('template for future use')],
+    debug: false                  // debug заставляет browserify строить sourcemaps. На входе файл "path.src.jsx"
+  })
     .transform('babelify', {presets: ['es2015', 'stage-0', 'react']})       // modules: babel-preset-es2015
     .bundle()                                                               // эта херня выдает "text stream"
     .pipe( source(path.build.jsx) )                                         // конвертируем в "vinyl stream". Теперь большинство gulp-плагинов подцепятся к stream. На выходе файл "path.build.jsx"

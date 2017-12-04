@@ -1,5 +1,4 @@
 import React from 'react'
-
 var d3 = require("d3")
 
 
@@ -12,15 +11,17 @@ export class HostGraph extends React.Component {
       clkHostId: ''
     }
 
+    this.handleClkAction      = this.handleClkAction.bind(this)
+
     this.apiCmd = {
       token:  window.localStorage.getItem('token'),
       get:    'hostlink_get'
     }
 
-    this.onBtnClkShowResult = (btnArg) => {
-      this.forceDirectedGraph(btnArg)
-    }
 
+
+
+    // Grapf ----------------------------------------------
     this.forceDirectedGraph = (layer) => {
       // https://bl.ocks.org/mbostock/4062045
       var self = this
@@ -117,6 +118,12 @@ export class HostGraph extends React.Component {
 
 
 
+  handleClkAction(event) {
+    this.forceDirectedGraph(event.target.value)
+  }
+
+
+
 
   render() {
     console.log('HostGraph render')
@@ -126,9 +133,9 @@ export class HostGraph extends React.Component {
       <pre className='std-item-header'>HostGraph {this.state.clkHostId}</pre>
 
       <pre> 
-        <button className='get-bttn' onClick={()=>this.onBtnClkShowResult('L1')}>L1</button>
-        <button className='get-bttn' onClick={()=>this.onBtnClkShowResult('L2')}>L2</button>
-        <button className='get-bttn' onClick={()=>this.onBtnClkShowResult('L3')}>L3</button>
+        <button className='get-bttn' onClick={this.handleClkAction} value='L1'>L1</button>
+        <button className='get-bttn' onClick={this.handleClkAction} value='L2'>L2</button>
+        <button className='get-bttn' onClick={this.handleClkAction} value='L3'>L3</button>
       </pre>
 
       <svg ref={node => this.node = node} width={400} height={400}></svg>

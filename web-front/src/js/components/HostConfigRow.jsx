@@ -7,16 +7,30 @@ export default class HostConfigRow extends React.Component {
     super(args)      // наполняю this от Win
 
     this.state = {
-      showMenu:     false,
-      showModNote:  false
+      description:  this.props.row.description || '',
+      notes:  this.props.row.inventory.notes || '{}',
+      showResult:       false,
+      showModNote:      false
     }
 
-    this.onBtnClkShowMenu = (btnArg) => {
-      this.setState({showMenu: !this.state.showMenu})
-    }
+    this.handleChangeTextDesc   = this.handleChangeTextDesc.bind(this)
+    this.handleChangeTextNotes  = this.handleChangeTextNotes.bind(this)
+    this.handleClkShowResult    = this.handleClkShowResult.bind(this)
+    this.handleClkAction        = this.handleClkAction.bind(this)
 
-    this.onBtnClkMenuAction = (btnArg) => {
-      if (btnArg === 'del') {
+  }
+
+
+
+
+  handleClkShowResult(event) {
+    this.setState({showResult: !this.state.showResult})
+  }
+
+  handleClkAction(event) {
+    switch (true) {
+
+      case (event.target.value === 'del'):
         
         var confAnswer=window.confirm("Delete?")
         if (confAnswer) {
@@ -25,17 +39,17 @@ export default class HostConfigRow extends React.Component {
             hostid: this.props.row.hostid
           })
           .then((res) => {
-            this.props.Win.searchResultSetState()
+            this.props.Win.hostSearch()
           })
         }
 
-      }
+        break
 
-      if (btnArg === 'mod') {
-
+      case (event.target.value === 'mod'):
+        
         var notesObj = false
         try {
-          notesObj = JSON.parse(this.refs.inventoryNotes.value)
+          notesObj = JSON.parse(this.state.notes)
         } catch (e) {
           alert('inventory.notes Must be JSON object!')
         }
@@ -45,9 +59,9 @@ export default class HostConfigRow extends React.Component {
             token: this.props.Win.apiCmd.token,
             hostid: this.props.row.hostid,
             body: {
-              description: this.refs.description.value,
+              description: this.state.description,
               inventory: {
-                notes: this.refs.inventoryNotes.value
+                notes: this.state.notes
               }
             }
           })
@@ -59,7 +73,11 @@ export default class HostConfigRow extends React.Component {
           })
         }
 
-      }
+        break
+
+      default:
+        console.log('default')
+        break
 
     }
 
@@ -68,11 +86,22 @@ export default class HostConfigRow extends React.Component {
 
 
 
+  handleChangeTextDesc(event) {
+    this.setState({description: event.target.value})
+  }
+
+  handleChangeTextNotes(event) {
+    this.setState({notes: event.target.value})
+  }
+
+
+
+
   render() {
     console.log('render HostConfigRow')
     var finalTemplate = null
-    
     let row = this.props.row
+
     let hGroups = ''
     row.groups.map( (rowGroup, i)             => { hGroups = hGroups + '"'+rowGroup.name+'" ' } )
     let hTemplates = ''
@@ -85,18 +114,18 @@ export default class HostConfigRow extends React.Component {
 
     finalTemplate =
     <div className='host-config-item'>
-      <div className='std-item-header-small' onClick={()=>this.onBtnClkShowMenu()}>
+      <div className='std-item-header-small' onClick={this.handleClkShowResult}>
         {row.host} <strong className={this.state.showModNote ? 'mod-bttn' : 'display-none'}> Изменено </strong>
       </div>
       <div className='host-config-item-menu'>group: {hGroups}</div>
-      <div className={this.state.showMenu ? 'host-config-item-menu' : 'display-none'}>
+      <div className={this.state.showResult ? 'host-config-item-menu' : 'display-none'}>
         {/* templates: {hTemplates} */}
         {/* interfaces: {hInterfaces} */}
         
-        inventory.notes (JSON):<br /><textarea className='host-config-textarea' ref='inventoryNotes' defaultValue={row.inventory.notes ? row.inventory.notes : '{}'}></textarea><br />
-        description:<br /><textarea className='host-config-textarea-small' ref='description' defaultValue={row.description}></textarea><br />
-        <button className='del-bttn' onClick={()=>this.onBtnClkMenuAction('del')}>Удалить</button>&nbsp;
-        <button className='mod-bttn' onClick={()=>this.onBtnClkMenuAction('mod')}>Изменить</button>
+        inventory.notes (JSON):<br /><textarea className='host-config-textarea' value={this.state.notes} onChange={this.handleChangeTextNotes}></textarea><br />
+        description:<br /><textarea className='host-config-textarea-small' value={this.state.description} onChange={this.handleChangeTextDesc}></textarea><br />
+        <button className='del-bttn' onClick={this.handleClkAction} value='del'>Удалить</button>&nbsp;
+        <button className='mod-bttn' onClick={this.handleClkAction} value='mod'>Изменить</button>
       </div>
     </div>
 
