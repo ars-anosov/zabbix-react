@@ -4,7 +4,7 @@
   "description": "React components for Zabbix interaction. Interacts by OpenAPI at zabbix-reactor server.",
   "main": "gulpfile.js",
   "scripts": {
-    "install-components": "cd src/js/components && npm install"
+    "install-components": "cd src/js/components && npm install --force"
   },
   "repository": {
     "type": "git",
