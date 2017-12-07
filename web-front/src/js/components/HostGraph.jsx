@@ -29,17 +29,34 @@ export class HostGraph extends React.Component {
       var svg = d3.select(this.node),
           width = +svg.attr("width"),
           height = +svg.attr("height");
-      
+
       svg.selectAll("*").remove()
 
       var color = d3.scaleOrdinal(d3.schemeCategory20);
-      
+
       var simulation = d3.forceSimulation()
-          .force("link", d3.forceLink().id(function(d) { return d.id; }))
+          .force("link", d3.forceLink().distance(60).id(function(d) { return d.id; }))
           .force("charge", d3.forceManyBody())
           .force("center", d3.forceCenter(width / 2, height / 2));
-      
-  
+
+      function dragstarted(d) {
+        self.setState({clkHostId: d.id})
+        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+      }
+
+      function dragged(d) {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+      }
+
+      function dragended(d) {
+        if (!d3.event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+      }
+
       this.props.swgClient.apis.Data[this.apiCmd.get]({token: this.apiCmd.token, layer: layer })
       .then((res) => {
 
@@ -64,11 +81,20 @@ export class HostGraph extends React.Component {
                   .on("start", dragstarted)
                   .on("drag", dragged)
                   .on("end", dragended))
-          
-    
+
           node.append("title")
             .text(function(d) { return d.id; })
 
+          var ttt = svg.append("g")
+              .attr("class", "texts")
+            .selectAll("text")
+            .data(graph.nodes)
+            .enter().append("text")
+              .attr("fill", function(d) { return color(d.group); })
+              .text(function(d) {
+                let sss = d.id.split('.')
+                return sss[0];
+              })
 
           simulation
               .nodes(graph.nodes)
@@ -87,6 +113,10 @@ export class HostGraph extends React.Component {
             node
                 .attr("cx", function(d) { return d.x; })
                 .attr("cy", function(d) { return d.y; })
+
+            ttt
+                .attr("x", function(d) { return d.x-5; })
+                .attr("y", function(d) { return d.y-10; })
           }
 
         }
@@ -95,26 +125,7 @@ export class HostGraph extends React.Component {
         }
 
       })
-      
 
-      function dragstarted(d) {
-        self.setState({clkHostId: d.id})
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-      }
-      
-      function dragged(d) {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
-      }
-      
-      function dragended(d) {
-        if (!d3.event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-      }
-  
     }
 
   }
@@ -142,7 +153,7 @@ export class HostGraph extends React.Component {
         <button className='get-bttn' onClick={this.handleClkAction} value='L3'>L3</button>
       </pre>
 
-      <svg ref={node => this.node = node} width={400} height={400}></svg>
+      <svg ref={node => this.node = node} width={800} height={600}></svg>
     </div>
 
     return finalTemplate
