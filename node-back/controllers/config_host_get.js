@@ -64,20 +64,29 @@ exports.apiAction = function(req, res, next) {
 
     request(reqOptions, function(requestErr, requestRes, requestBody) {
       var requestBodyJson = JSON.parse(requestBody)
-      console.log(requestBodyJson)
-
+      
       if (requestBodyJson.result) {
 
-        // Inventory bug! Empty object responses as array : []
+        // bug fixes
         requestBodyJson.result.map((row, i) => {
+
+          // Inventory bug! Empty object responses as array : []
           if (typeof(row.inventory) === 'object') {
             requestBodyJson.result[i].inventory = {
               'notes': requestBodyJson.result[i].inventory.notes
             }
           }
           else {
-            requestBodyJson.result[i].inventory = {}
+            requestBodyJson.result[i].inventory = {
+              'notes': ''
+            }
           }
+
+          // Old Zabbix has not description property
+          if (!row.description) {
+            requestBodyJson.result[i].description = ''
+          }
+
         })
 
         apiTools.apiResJson(res, requestBodyJson.result, 200)

@@ -34,13 +34,22 @@ export class HostConfig extends React.Component {
 
     // API actions ----------------------------------------
     this.hostAdd = () => {
-      this.props.swgClient.apis.Configuration[this.apiCmd.post]({token: this.apiCmd.token, body: {dns: this.state.inputHostName, groupid: parseInt(this.state.selectHostGroup)} })
-      .then((res) => {
-        this.hostSearch()
-      })
-      .catch((err) => {
-        // err
-      })
+      if (this.state.inputHostName && parseInt(this.state.selectHostGroup) > 0) {
+        this.props.swgClient.apis.Configuration[this.apiCmd.post]({token: this.apiCmd.token, body: {dns: this.state.inputHostName, groupid: parseInt(this.state.selectHostGroup)} })
+        .then((res) => {
+
+          if (res.status === 200) {
+            this.hostSearch()
+          }
+          else {
+            console.log(res.body)
+          }
+
+        })
+        .catch((err) => {
+          // err
+        })
+      }
     }
 
     this.hostSearch = () => {
@@ -49,9 +58,14 @@ export class HostConfig extends React.Component {
       this.props.swgClient.apis.Configuration[this.apiCmd.get]({token: this.apiCmd.token, name: this.state.inputHostName, group: this.state.selectHostGroup})
       .then((res) => {
 
-        res.body.map( (row, i) => {
-          searchResultTemplate.push(<HostConfigRow {...{Win: this}} row={row} key={i}/>)
-        })
+        if (res.status === 200) {
+          res.body.map( (row, i) => {
+            searchResultTemplate.push(<HostConfigRow {...{Win: this}} row={row} key={i}/>)
+          })
+        }
+        else {
+          console.log(res.body)
+        }
 
         this.setState({searchResult: searchResultTemplate, showResult: true})
       })
@@ -67,10 +81,17 @@ export class HostConfig extends React.Component {
     // Select oprions -------------------------------------
     this.props.swgClient.apis.Configuration[this.apiCmd.getGroups]({token: this.apiCmd.token, name: '' })
     .then((res) => {
-      this.setState({groupList: res.body})
+
+      if (res.status === 200) {
+        this.setState({groupList: res.body})
+      }
+      else {
+        console.log(res.body)
+      }
+
     })
     .catch((err) => {
-      // err
+      //err
     })
 
   }
@@ -95,6 +116,7 @@ export class HostConfig extends React.Component {
     switch (true) {
 
       case (event.target.value === 'search'):
+        this.setState({searchResult: null})
         this.hostSearch()
         break
 

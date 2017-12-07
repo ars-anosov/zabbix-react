@@ -24,6 +24,19 @@ export default class HostConfigRow extends React.Component {
 
 
   handleClkShowResult(event) {
+    
+    // Если результат скрыт, запрашиваем новые занчения
+    if (!this.state.showResult) {
+      this.props.Win.props.swgClient.apis.Configuration[this.props.Win.apiCmd.get]({
+        token: this.props.Win.apiCmd.token,
+        name: this.props.row.host
+      })
+      .then((res) => {
+        this.setState({description: res.body[0].description, notes: res.body[0].inventory.notes})
+      })
+    }
+    
+    // Показываем/скрываем результат
     this.setState({showResult: !this.state.showResult})
   }
 
@@ -48,6 +61,9 @@ export default class HostConfigRow extends React.Component {
       case (event.target.value === 'mod'):
         
         var notesObj = false
+
+        console.log(this.state.notes)
+        
         try {
           notesObj = JSON.parse(this.state.notes)
         } catch (e) {

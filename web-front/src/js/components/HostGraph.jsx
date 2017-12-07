@@ -42,55 +42,59 @@ export class HostGraph extends React.Component {
   
       this.props.swgClient.apis.Data[this.apiCmd.get]({token: this.apiCmd.token, layer: layer })
       .then((res) => {
-        var graph = res.body
-      
-        var link = svg.append("g")
-            .attr("class", "links")
-          .selectAll("line")
-          .data(graph.links)
-          .enter().append("line")
-            .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
-      
-        var node = svg.append("g")
-            .attr("class", "nodes")
-          .selectAll("circle")
-          .data(graph.nodes)
-          .enter().append("circle")
-            .attr("r", 8)
-            .attr("fill", function(d) { return color(d.group); })
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
-        
 
-        node.append("title")
-          .text(function(d) { return d.id; });
+        if (res.status === 200) {
+          var graph = res.body
+
+          var link = svg.append("g")
+              .attr("class", "links")
+            .selectAll("line")
+            .data(graph.links)
+            .enter().append("line")
+              .attr("stroke-width", function(d) { return Math.sqrt(d.value); })
+
+          var node = svg.append("g")
+              .attr("class", "nodes")
+            .selectAll("circle")
+            .data(graph.nodes)
+            .enter().append("circle")
+              .attr("r", 8)
+              .attr("fill", function(d) { return color(d.group); })
+              .call(d3.drag()
+                  .on("start", dragstarted)
+                  .on("drag", dragged)
+                  .on("end", dragended))
+          
+    
+          node.append("title")
+            .text(function(d) { return d.id; })
 
 
+          simulation
+              .nodes(graph.nodes)
+              .on("tick", ticked);
 
+          simulation.force("link")
+              .links(graph.links);
 
-      
-        simulation
-            .nodes(graph.nodes)
-            .on("tick", ticked);
-      
-        simulation.force("link")
-            .links(graph.links);
-      
-        function ticked() {
-          link
-              .attr("x1", function(d) { return d.source.x; })
-              .attr("y1", function(d) { return d.source.y; })
-              .attr("x2", function(d) { return d.target.x; })
-              .attr("y2", function(d) { return d.target.y; });
-      
-          node
-              .attr("cx", function(d) { return d.x; })
-              .attr("cy", function(d) { return d.y; });
+          function ticked() {
+            link
+                .attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; })
+
+            node
+                .attr("cx", function(d) { return d.x; })
+                .attr("cy", function(d) { return d.y; })
+          }
 
         }
-      });
+        else {
+          console.log(res.body)
+        }
+
+      })
       
 
       function dragstarted(d) {
