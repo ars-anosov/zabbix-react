@@ -139,7 +139,7 @@ export class HostConfig extends React.Component {
 
     var finalTemplate =
     <div className='host-config-win'>
-      <div className='std-item-header' onClick={this.handleClkShowResult}>HostConfig</div>
+      <div className='std-item-header' onClick={this.handleClkShowResult}>{this.props.headerTxt}</div>
 
       <input type='text' placeholder='DNS or IP' value={this.state.inputHostName} onChange={this.handleChangeInput} />
       <select size='1' value={this.state.selectHostGroup} onChange={this.handleChangeSelect}>

@@ -20,8 +20,8 @@ swg.connect((client, err) => {
   else {
     ReactDOM.render(
       <div>
-        <HostConfig swgClient={client} />
-        <HostGraph swgClient={client} />
+        <HostConfig swgClient={client} headerTxt='HostConfig component' />
+        <HostGraph swgClient={client} headerTxt='HostGraph component' />
       </div>,
       document.getElementById('root')
     )

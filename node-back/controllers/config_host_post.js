@@ -50,11 +50,11 @@ exports.apiAction = function(req, res, next) {
   switch (true) {
 
     case (args.body.value.groupid === 9):
-      json_request.params.templates = [ {"templateid": 10106}, {"templateid": 10107} ]
+      //json_request.params.templates = [ {"templateid": 10106}, {"templateid": 10107} ]
       break
 
     case (args.body.value.groupid === 11):
-      json_request.params.templates = [ {"templateid": 10107}, {"templateid": 10108} ]
+      //json_request.params.templates = [ {"templateid": 10107}, {"templateid": 10108} ]
       break
 
     default:

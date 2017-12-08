@@ -14,8 +14,9 @@ export class HostGraph extends React.Component {
     this.handleClkAction      = this.handleClkAction.bind(this)
 
     this.apiCmd = {
-      token:  window.localStorage.getItem('token'),
-      get:    'hostlink_get'
+      token:      window.localStorage.getItem('token'),
+      getLinks:   'hostlink_get',
+      getGroups:  'hostgroup_get'
     }
 
 
@@ -40,7 +41,7 @@ export class HostGraph extends React.Component {
           .force("center", d3.forceCenter(width / 2, height / 2));
 
       function dragstarted(d) {
-        self.setState({clkHostId: d.id})
+        //self.setState({clkHostId: d.id})
         if (!d3.event.active) simulation.alphaTarget(0.3).restart();
         d.fx = d.x;
         d.fy = d.y;
@@ -57,75 +58,113 @@ export class HostGraph extends React.Component {
         d.fy = null;
       }
 
-      this.props.swgClient.apis.Data[this.apiCmd.get]({token: this.apiCmd.token, layer: layer })
-      .then((res) => {
+      // get Groups
+      var drawSvgContent = () => {
+        var groupsObj = {}
+        this.props.swgClient.apis.Configuration[this.apiCmd.getGroups]({token: this.apiCmd.token})
+        .then((res) => {
+          if (res.status === 200) {
+            res.body.map((row, i) => {
+              groupsObj[row.groupid] = {'name': row.name, 'color': color(i)}
+            })
+            drawLinks(groupsObj)
+          }
+          else {
+            console.log(res.body)
+          }
+        })
+      }
 
-        if (res.status === 200) {
-          var graph = res.body
+      // Get Nodes and Links
+      var drawLinks = (groupsObj) => {
+        this.props.swgClient.apis.Data[this.apiCmd.getLinks]({token: this.apiCmd.token, layer: layer })
+        .then((res) => {
+          if (res.status === 200) {
+            var graph = res.body
 
-          var link = svg.append("g")
-              .attr("class", "links")
-            .selectAll("line")
-            .data(graph.links)
-            .enter().append("line")
-              .attr("stroke-width", function(d) { return Math.sqrt(d.value); })
+            var link = svg.append("g")
+                .attr("class", "links")
+              .selectAll("line")
+              .data(graph.links)
+              .enter().append("line")
+                .attr("stroke-width", function(d) { return Math.sqrt(d.value); })
 
-          var node = svg.append("g")
-              .attr("class", "nodes")
-            .selectAll("circle")
-            .data(graph.nodes)
-            .enter().append("circle")
-              .attr("r", 8)
-              .attr("fill", function(d) { return color(d.group); })
-              .call(d3.drag()
-                  .on("start", dragstarted)
-                  .on("drag", dragged)
-                  .on("end", dragended))
+            var node = svg.append("g")
+                .attr("class", "nodes")
+              .selectAll("circle")
+              .data(graph.nodes)
+              .enter().append("circle")
+                .attr("r", 8)
+                .attr("fill", function(d) { return groupsObj[d.group].color })
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended))
 
-          node.append("title")
-            .text(function(d) { return d.id; })
+            node.append("title")
+              .text(function(d) { return d.id+', group: '+groupsObj[d.group].name })
 
-          var ttt = svg.append("g")
-              .attr("class", "texts")
-            .selectAll("text")
-            .data(graph.nodes)
-            .enter().append("text")
-              .attr("fill", function(d) { return color(d.group); })
-              .text(function(d) {
-                let sss = d.id.split('.')
-                return sss[0];
-              })
+            var ttt = svg.append("g")
+                .attr("class", "texts")
+              .selectAll("text")
+              .data(graph.nodes)
+              .enter().append("text")
+                .attr("fill", function(d) { return groupsObj[d.group].color })
+                .text(function(d) {
+                  // dns.name
+                  let sss = d.id.split('.')
+                  // IP v4
+                  if ( d.id.match(/^\d+\.\d+\.\d+\.\d+$/i) !== null ) { sss[0] = d.id }
+                  return sss[0];
+                })
 
-          simulation
-              .nodes(graph.nodes)
-              .on("tick", ticked);
+            // Legend
+            var groupsPresent = {}
+            res.body.nodes.map((row, i) => { groupsPresent[row.group] = 1 })
+            var topPx = 20
+            for (let key in groupsPresent) {
+              svg.append("text")
+                  .attr("class", "texts")
+                  .attr("fill", function(d) { return groupsObj[key].color })
+                  .attr("x", "5px")
+                  .attr("y", topPx+"px")
+                  .text(groupsObj[key].name)
+              topPx = topPx + 12
+            }
 
-          simulation.force("link")
-              .links(graph.links);
+            // go go go
+            simulation
+                .nodes(graph.nodes)
+                .on("tick", ticked);
 
-          function ticked() {
-            link
-                .attr("x1", function(d) { return d.source.x; })
-                .attr("y1", function(d) { return d.source.y; })
-                .attr("x2", function(d) { return d.target.x; })
-                .attr("y2", function(d) { return d.target.y; })
+            simulation.force("link")
+                .links(graph.links);
 
-            node
-                .attr("cx", function(d) { return d.x; })
-                .attr("cy", function(d) { return d.y; })
+            function ticked() {
+              link
+                  .attr("x1", function(d) { return d.source.x; })
+                  .attr("y1", function(d) { return d.source.y; })
+                  .attr("x2", function(d) { return d.target.x; })
+                  .attr("y2", function(d) { return d.target.y; })
+  
+              node
+                  .attr("cx", function(d) { return d.x; })
+                  .attr("cy", function(d) { return d.y; })
+  
+              ttt
+                  .attr("x", function(d) { return d.x-5; })
+                  .attr("y", function(d) { return d.y-10; })
+            }
 
-            ttt
-                .attr("x", function(d) { return d.x-5; })
-                .attr("y", function(d) { return d.y-10; })
+          }
+          else {
+            console.log(res.body)
           }
 
-        }
-        else {
-          console.log(res.body)
-        }
+        })
+      }
 
-      })
-
+      drawSvgContent()
     }
 
   }
@@ -145,7 +184,7 @@ export class HostGraph extends React.Component {
 
     var finalTemplate =
     <div className='host-graph-win'>
-      <pre className='std-item-header'>HostGraph {this.state.clkHostId}</pre>
+      <pre className='std-item-header'>{this.props.headerTxt}</pre>
 
       <pre> 
         <button className='get-bttn' onClick={this.handleClkAction} value='L1'>L1</button>
@@ -153,7 +192,7 @@ export class HostGraph extends React.Component {
         <button className='get-bttn' onClick={this.handleClkAction} value='L3'>L3</button>
       </pre>
 
-      <svg ref={node => this.node = node} width={800} height={600}></svg>
+      <svg ref={node => this.node = node} width={640} height={480}></svg>
     </div>
 
     return finalTemplate
