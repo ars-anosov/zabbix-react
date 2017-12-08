@@ -15,6 +15,7 @@
 
 ### Примеры
 ![Image](https://github.com/ars-anosov/zabbix-react/blob/master/images/demo_screen.png)
+![Image](https://github.com/ars-anosov/zabbix-react/blob/master/images/demo_graph.png)
 
 - [examples](https://github.com/ars-anosov/zabbix-react/tree/master/examples)
 - [Demo](http://zabbix.react.com.ru)
