@@ -1,3 +1,3 @@
-export { OpenApiSwagger }       from './OpenApiSwagger.js'
-export { HostConfig }           from './HostConfig.jsx'
-export { HostGraph }            from './HostGraph.jsx'
+export { OpenApiSwagger }       from './OpenApiSwagger'
+export { HostConfig }           from './HostConfig'
+export { HostGraph }            from './HostGraph'

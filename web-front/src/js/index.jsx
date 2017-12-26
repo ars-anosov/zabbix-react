@@ -3,6 +3,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
 import { OpenApiSwagger, HostConfig, HostGraph } from './components/zabbix-react-component'
+//import { OpenApiSwagger, HostConfig, HostGraph } from 'zabbix-react-component'            // from node_modules
 
 window.localStorage.setItem('token', 'test')
 

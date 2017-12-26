@@ -113,11 +113,11 @@ gulp.task('jsx:build', function () {
   // .jsx ONLY ONE file
   browserify({
     entries: path.src.jsx,
-    extensions: ['.jsx'],
+    extensions: ['.js', '.jsx'],                                            // какие файлы будет обрабатывать browserify
     //noParse: [require.resolve('template for future use')],
     debug: false                  // debug заставляет browserify строить sourcemaps. На входе файл "path.src.jsx"
   })
-    .transform('babelify', {presets: ['es2015', 'stage-0', 'react']})       // modules: babel-preset-es2015
+    .transform('babelify', {presets: ['env', 'react']})                     // modules: babel-preset-es2015 -> теперь env
     .bundle()                                                               // эта херня выдает "text stream"
     .pipe( source(path.build.jsx) )                                         // конвертируем в "vinyl stream". Теперь большинство gulp-плагинов подцепятся к stream. На выходе файл "path.build.jsx"
     .pipe( gulpif( buildFlag.production, buffer() ) )                       // Плагину uglify нужен "buffered vinyl file object". Конвертируем.

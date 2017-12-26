@@ -1,5 +1,5 @@
 import React from 'react';
-import HostConfigRow from './HostConfigRow.jsx'
+import HostConfigRow from './HostConfigRow'
 
 
 export class HostConfig extends React.Component {

@@ -88,9 +88,6 @@ cd my-app
 rm -f src/*
 
 yarn add zabbix-react-component
-# react-scripts не могут распознать JSX синтаксис в установленых модулях node_modules :(
-# тащим нужные файлы в src/
-cp node_modules/zabbix-react-component/* src/
 
 # Редактируем файлы. См. ниже.
 touch src/index.js
@@ -99,13 +96,13 @@ touch src/index.css
 npm start
 ```
 
-- Содержимое <strong>index.js</strong>
+- Содержимое **index.js**
 
 ```js
 import React from 'react';
 import ReactDOM from 'react-dom'
 
-import { OpenApiSwagger, HostConfig, HostGraph } from './zabbix-react-component'
+import { OpenApiSwagger, HostConfig, HostGraph } from 'zabbix-react-component'
 import './index.css';
 
 window.localStorage.setItem('token', 'test')
@@ -120,8 +117,8 @@ swg.connect((client, err) => {
   else {
     ReactDOM.render(
       <div>
-        <HostConfig swgClient={client} />
-        <HostGraph swgClient={client} />
+        <HostConfig swgClient={client} headerTxt='HostConfig component' />
+        <HostGraph swgClient={client} headerTxt='HostGraph component' />
       </div>,
       document.getElementById('root')
     )
@@ -129,13 +126,7 @@ swg.connect((client, err) => {
 })
 ```
 
-- Содержимое <strong>index.css</strong>
-
-```css
-@import "zabbix-react";
-```
-
-"zabbix-react.scss" + templates копируем отсюда [web-front/src/style](https://github.com/ars-anosov/zabbix-react/tree/master/web-front/src/style)
+- Содержимое **index.css** копируем отсюда [examples/css](https://github.com/ars-anosov/zabbix-react/tree/master/examples/css)
 
 Тыкаем компоненты на локальном web-сервере - [localhost:3000](http://localhost:3000/)
 

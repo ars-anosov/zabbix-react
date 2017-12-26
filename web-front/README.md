@@ -51,3 +51,23 @@ npm run install-components
 gulp
 ```
 Выскочить из контейнера: Ctrl+P+Q
+
+
+### npm publish
+Прогоняем через Babel
+
+```
+cd src/js/components
+
+gulp clean
+gulp
+```
+
+Публикуем на npmjs.org
+```
+grep version package.json
+sed -i -e 's/"version": "2.0.1"/"version": "2.0.2"/' package.json
+
+npm login
+npm publish
+```
