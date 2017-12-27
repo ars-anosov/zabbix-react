@@ -51,8 +51,16 @@ var swaggerDoc = jsyaml.safeLoad(spec);
 // reqclient --------------------------------------------------------
 const request = require('request');
 var zxAuth = '';
+var reqOptions = {  
+  url: zxUrl,
+  method: 'POST',
+  headers: {
+      'Content-Type': 'application/json'
+  },
+  body: ''
+};
 
-var json_request = {
+var userLoginJsonReq = {
   "jsonrpc": "2.0",
   "method": "user.login",
   "params": {
@@ -63,16 +71,8 @@ var json_request = {
   "auth": null
 }
 
-var reqOptions = {  
-  url: zxUrl,
-  method: 'POST',
-  headers: {
-      'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(json_request)
-};
-
-function getZbxAuthToken() {
+function getZbxAuthToken(jsonReq) {
+	reqOptions.body = JSON.stringify(jsonReq)
 	request(reqOptions, function(err, res, body) {  
     let json = JSON.parse(body)
     console.log('Zabbix Auth: '+json.result)
@@ -81,9 +81,9 @@ function getZbxAuthToken() {
 }
 
 // Auth every minute ---------------------------
-getZbxAuthToken()
+getZbxAuthToken(userLoginJsonReq)
 setInterval(() => {
-  getZbxAuthToken()
+  getZbxAuthToken(userLoginJsonReq)
 }, 60000)
 
 
