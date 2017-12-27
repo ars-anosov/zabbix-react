@@ -69,16 +69,23 @@ var reqOptions = {
   headers: {
       'Content-Type': 'application/json'
   },
-  body: ''
+  body: JSON.stringify(json_request)
 };
 
-reqOptions.body = JSON.stringify(json_request)
+function getZbxAuthToken() {
+	request(reqOptions, function(err, res, body) {  
+    let json = JSON.parse(body)
+    console.log('Zabbix Auth: '+json.result)
+    zxAuth = json.result
+  })
+}
 
-request(reqOptions, function(err, res, body) {  
-  let json = JSON.parse(body);
-  console.log('Zabbix Auth: '+json.result);
-  zxAuth = json.result;
-});
+// Auth every minute ---------------------------
+getZbxAuthToken()
+setInterval(() => {
+  getZbxAuthToken()
+}, 60000)
+
 
 
 
