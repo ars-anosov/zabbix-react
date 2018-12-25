@@ -17,13 +17,19 @@
 ![Image](https://github.com/ars-anosov/zabbix-react/blob/master/images/demo_screen.png)
 ![Image](https://github.com/ars-anosov/zabbix-react/blob/master/images/demo_graph.png)
 
-- [examples](https://github.com/ars-anosov/zabbix-react/tree/master/examples)
-- [Demo](http://zabbix.react.com.ru)
+- [Demo](http://109.173.22.60/www-zabbix-component/)
 
 ## Цель
 1. Предоставить FrontEnd в виде [React-компоненты](https://github.com/ars-anosov/zabbix-react/tree/master/web-front)
 2. Взаимодействие Front-Back свести до простейших REST-запросов
 3. Сосредоточить всю логику взаимодействия с Zabbix-сервером на BackEnd - [zabbix-reactor](https://github.com/ars-anosov/zabbix-react/tree/master/node-back)
+
+## Настройка Zabbix-сервера
+Мы хотим открыть доступ только к определенным Host group на Zabbix. Для этого необходимо создать отдельного пользователя «react_user».
+
+- ***Administration/User groups***: добавляем группу пользователей «react_user_group»
+- ***Administration/User groups/Permissions***: добавляем Host groups, с которыми будет позволено работать «react_user». Выставляем Read-write.
+- ***Administration/Users***: добавляем пользователя, включаем в группу пользователей созданную в пп.1
 
 ## Установка / Использование
 
@@ -38,7 +44,7 @@ docker build -t 'zabbix-reactor-node:latest' github.com/ars-anosov/zabbix-react#
 docker run \
   --name zabbix-reactor-node \
   --publish=8002:8002 \
-  --env="ZX_URL=http://zabbix-server.react.com.ru/api_jsonrpc.php" \
+  --env="ZX_URL=http://<INSERT_ZABBIX_IP_HERE>/api_jsonrpc.php" \
   --env="ZX_USER=guest" \
   --env="ZX_PASS=" \
   -it \
