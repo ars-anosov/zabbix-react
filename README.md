@@ -18,6 +18,7 @@
 ![Image](https://github.com/ars-anosov/zabbix-react/blob/master/images/demo_graph.png)
 
 - [Demo](http://109.173.22.60/www-zabbix-component/)
+- [zabbix-server demo](http://109.173.22.60/zabbix-server/hostinventories.php) (пользователь Guest)
 
 ## Цель
 1. Предоставить FrontEnd в виде [React-компоненты](https://github.com/ars-anosov/zabbix-react/tree/master/web-front)
