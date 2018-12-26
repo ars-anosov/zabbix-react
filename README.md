@@ -18,7 +18,8 @@
 ![Image](https://github.com/ars-anosov/zabbix-react/blob/master/images/demo_graph.png)
 
 - [Demo](http://109.173.22.60/www-zabbix-component/)
-- [zabbix-server demo](http://109.173.22.60/zabbix-server/hostinventories.php) (пользователь Guest)
+- [zabbix-server demo](http://109.173.22.60/zabbix-server/hostinventories.php) (пользователь guest)
+- [API demo](http://109.173.22.60:8002/spec-ui/) (token test)
 
 ## Цель
 1. Предоставить FrontEnd в виде [React-компоненты](https://github.com/ars-anosov/zabbix-react/tree/master/web-front)
@@ -28,9 +29,9 @@
 ## Настройка Zabbix-сервера
 Мы хотим открыть доступ только к определенным Host group на Zabbix. Для этого необходимо создать отдельного пользователя «react_user».
 
-- ***Administration/User groups***: добавляем группу пользователей «react_user_group»
-- ***Administration/User groups/Permissions***: добавляем Host groups, с которыми будет позволено работать «react_user». Выставляем Read-write.
-- ***Administration/Users***: добавляем пользователя, включаем в группу пользователей созданную в пп.1
+- ***Administration/User groups***: добавляем группу пользователей ***react_user_group***
+- ***Administration/Users***: добавляем пользователя ***react_user***, включаем в группу пользователей react_user_group
+- ***Administration/User groups/Permissions***: добавляем ***Host groups***, с которыми будет позволено работать «react_user». Выставляем ***Read-write***. Именно здесь ограничиваем возможности React компонент по воздействию на Zabbix.
 
 ## Установка / Использование
 
