@@ -3,3 +3,5 @@ swagger-codegen
 node_modules
 package-lock.json
 web-front/build/*
+zxSettings_my.json
+zxSettings_intellin.json

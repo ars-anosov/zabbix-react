@@ -28,6 +28,11 @@ exports.apiAction = function(req, res, next) {
     "auth": req.myObj.request.auth
   }
 
+  // Только разрешенные группы
+  req.zxSettings.hostGroups.map((row)=>{
+    json_request.params.filter.groupid.push(row.id)
+  })
+
   if (args.name.value) {
     json_request.params.filter.name.push(args.name.value)
   }

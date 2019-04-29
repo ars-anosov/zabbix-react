@@ -21,6 +21,8 @@
 - [zabbix-server demo](http://109.173.22.60/zabbix-server/hostinventories.php) (пользователь guest)
 - [API demo](http://109.173.22.60:8002/spec-ui/) (token test)
 
+
+
 ## Цель
 1. Предоставить FrontEnd в виде [React-компоненты](https://github.com/ars-anosov/zabbix-react/tree/master/web-front)
 2. Взаимодействие Front-Back свести до простейших REST-запросов
@@ -33,34 +35,30 @@
 - ***Administration/Users***: добавляем пользователя ***react_user***, включаем в группу пользователей react_user_group
 - ***Administration/User groups/Permissions***: добавляем ***Host groups***, с которыми будет позволено работать «react_user». Выставляем ***Read-write***. Именно здесь ограничиваем возможности React компонент по воздействию на Zabbix.
 
+
+
 ## Установка / Использование
+Я собирал на своей машине **IP=192.168.13.97**, все ссылки относительно этого IP.
+
+
 
 ### 1. Back: zabbix-reactor
-OpenAPI-сервер обрабатывает REST-запросы от React-компонент.
-Общается с Zabbix-API.  
+OpenAPI-сервер обрабатывает REST-запросы от React-компонент. Общается с Zabbix-API.  
 
-#### 1.1 В Docker-контейнере NodeJS
-```
-docker build -t 'zabbix-reactor-node:latest' github.com/ars-anosov/zabbix-react#:node-back
+В директории [node-back](https://github.com/ars-anosov/zabbix-react/tree/master/node-back) описана установка.
 
-docker run \
-  --name zabbix-reactor-node \
-  --publish=8002:8002 \
-  --env="ZX_URL=http://<INSERT_ZABBIX_IP_HERE>/api_jsonrpc.php" \
-  --env="ZX_USER=guest" \
-  --env="ZX_PASS=" \
-  -it \
-  zabbix-reactor-node:latest
-```
-Выскочить из контейнера : Ctrl+P+Q
-
-- WEB-интерфейс для тестовых запросов через Swagger-UI - [localhost:8002/spec-ui/](http://localhost:8002/spec-ui/)
-- OpenAPI-Spec файл доступен - [localhost:8002/spec/swagger.json](http://localhost:8002/spec/swagger.json)
-- API принимает REST-запросы - [localhost:8002/v2api](http://localhost:8002/v2api/)
+Результат:
+- WEB-интерфейс для тестовых запросов через Swagger-UI - [192.168.13.97:8002/spec-ui/](http://192.168.13.97:8002/spec-ui/)
+- OpenAPI-Spec файл доступен - [192.168.13.97:8002/spec/swagger.json](http://192.168.13.97:8002/spec/swagger.json)
+- API принимает REST-запросы - [192.168.13.97:8002/v2api](http://192.168.13.97:8002/v2api/)
 
 В поле "token" вписываем "test".
 
+
+
 ### 2. Front: zabbix-react-component
+
+
 
 #### 2.1. Через gulp в Docker-контейнере NodeJS
 ```
@@ -74,7 +72,9 @@ docker run \
 ```
 Выскочить из контейнера : Ctrl+P+Q
 
-Живые компоненты - [localhost:8003](http://localhost:8003/)
+Живые компоненты - [192.168.13.97:8003](http://192.168.13.97:8003/)
+
+
 
 #### 2.2. В своем React bundler
 Например через [create-react-app](https://reactjs.org/tutorial/tutorial.html)
@@ -115,7 +115,7 @@ import './index.css';
 
 window.localStorage.setItem('token', 'test')
 
-const specUrl = 'http://localhost:8002/spec/swagger.json'
+const specUrl = 'http://192.168.13.97:8002/spec/swagger.json'
 const swg = new OpenApiSwagger(specUrl)
 
 swg.connect((client, err) => {
@@ -136,7 +136,15 @@ swg.connect((client, err) => {
 
 - Содержимое **index.css** копируем отсюда [examples/css](https://github.com/ars-anosov/zabbix-react/tree/master/examples/css)
 
-Тыкаем компоненты на локальном web-сервере - [localhost:3000](http://localhost:3000/)
+Тыкаем компоненты на локальном web-сервере - [192.168.13.97:3000](http://192.168.13.97:3000/)
+
+
+
+
+
+
+
+
 
 ## Пилим проект
 
@@ -156,7 +164,7 @@ docker run \
   --name=swagger-editor \
   swaggerapi/swagger-editor
 ```
-Пишем файл спецификации - [localhost:8001](http://localhost:8001/), там же генерим Server API / Client SDK
+Пишем файл спецификации - [192.168.13.97:8001](http://192.168.13.97:8001/), там же генерим Server API / Client SDK
 
 #### [swagger-codegen](https://github.com/swagger-api/swagger-codegen#development-in-docker)
 Любителям хардкора.

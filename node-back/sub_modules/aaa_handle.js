@@ -29,7 +29,8 @@ exports.checkAuth = function(req, res, next) {
       // Здесь какая-нибудь процедура проверки достоверности "token" например в базе данных
       // ----------------------------------------------------------------------------------
 
-      if (args.token.value === 'test') { tokenCheckResult = 'результат проверки - Ок' }
+      //if (args.token.value === 'test') { tokenCheckResult = 'результат проверки - Ок' }
+      if (args.token.value) { tokenCheckResult = 'результат проверки - Ок' }
       apiResponse(tokenCheckResult)
     }
   }

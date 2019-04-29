@@ -56,9 +56,23 @@ exports.apiAction = function(req, res, next) {
     // --------------------------------- //
     // Own logic for specific HostGroup. //
     // --------------------------------- //
-    switch (true) {
+    var hostGroupPassed = []
+    //hostGroupPassed = apiTools.arrExistsByPropName([{'id': parseInt(hostGroupId)}], 'id', req.zxSettings.hostGroups)
+    req.zxSettings.hostGroups.map((row)=>{
+      if (row.id === parseInt(hostGroupId)) { hostGroupPassed = row }
+    })
+    console.log(hostGroupPassed)
 
-      case (hostGroupId === '8'):
+    var finalMessage = 'API - no actions'
+    switch (true) {
+      
+      case (!req.zxSettings.delHostAllowed):
+        finalMessage = 'Запрещено удалять любой Host'
+        json_request.id = null
+        break
+
+      case (hostGroupPassed.length === 0):
+        finalMessage = 'нельзя удалять из Host Group id '+hostGroupId
         json_request.id = null
         break
 
@@ -88,7 +102,7 @@ exports.apiAction = function(req, res, next) {
 
     }
     else {
-      apiTools.apiResJson(res, {code: 202, message: 'API - no actions'}, 202)
+      apiTools.apiResJson(res, {'code': 202, 'message': finalMessage}, 202)
     }      
 
   })

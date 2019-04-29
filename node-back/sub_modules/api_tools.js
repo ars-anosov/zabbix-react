@@ -3,7 +3,7 @@
 /** Генератор случайной строки
  * @param {int} n длинна строки
  */
-module.exports.randWDclassic = function randWDclassic(n) {
+const randWDclassic = function (n) {
   var s ='', abd ='abcdefghijklmnopqrstuvwxyz0123456789', aL = abd.length;
   while(s.length < n)
     s += abd[Math.random() * aL|0];
@@ -23,7 +23,7 @@ module.exports.randWDclassic = function randWDclassic(n) {
  * @param {string} salt соль
  * @param {int} length длинна hash. Нужна чтобы отрезать "=" в конце
  */
-module.exports.passHashGet = function passHashGet(pass, salt, length) {
+const passHashGet = function (pass, salt, length) {
   var crypto = require('crypto');
 
   var sha = crypto.createHash('sha1');
@@ -45,7 +45,7 @@ module.exports.passHashGet = function passHashGet(pass, salt, length) {
  * @param {obj} resObj данные, которые нужно впихнуть в res
  * @param {int} statusCode HTTP status code
  */
-module.exports.apiResJson = function apiResJson(res, resObj, statusCode) {
+const apiResJson = function (res, resObj, statusCode) {
   var response = {};
   response['application/json'] = resObj;
 
@@ -54,3 +54,47 @@ module.exports.apiResJson = function apiResJson(res, resObj, statusCode) {
 
   res.end(JSON.stringify(response[Object.keys(response)[0]] || {}, null, 2));
 }
+
+
+
+
+
+
+
+
+
+/** выдает часть массива a1 у которого a1[propName] присутствует в a2
+ * @param {array} a1 массив объектов у которых есть свойство с именем propName
+ * @param {string} propName имя свойства
+ * @param {array} a2 массив разрешенных вариантов содержимого в propName у a1
+ */
+const arrExistsByPropName = function (a1, propName, a2) {
+  if (a1 && a2) {
+    if (a2[0] === '*') {
+      return a1
+    }
+    else {
+      return a1.filter( (i) => {
+        let flag = false
+        flag = a2.includes(i[propName])
+        return flag
+      })
+    }
+  }
+  else {
+    return []
+  }
+}
+
+
+
+
+
+
+
+
+
+module.exports.randWDclassic  = randWDclassic
+module.exports.passHashGet  = passHashGet
+module.exports.apiResJson  = apiResJson
+module.exports.arrExistsByPropName  = arrExistsByPropName

@@ -46,20 +46,34 @@ exports.apiAction = function(req, res, next) {
   // --------------------------------- //
   // Own logic for specific HostGroup. //
   // --------------------------------- //
+  var hostGroupPassed = []
+  //hostGroupPassed = apiTools.arrExistsByPropName([{'id': parseInt(args.body.value.groupid)}], 'id', req.zxSettings.hostGroups)
+  req.zxSettings.hostGroups.map((row)=>{
+    if (row.id === parseInt(args.body.value.groupid)) { hostGroupPassed = row }
+  })
+  console.log(hostGroupPassed)
+
+  var finalMessage = 'API - no actions'
   // Templates MUST BE in appropriate HostGroup at Zabbix Config. Otherwise error: "No permissions to referred object or it does not exist!"
   switch (true) {
 
-    case (args.body.value.groupid === 9):
-      //json_request.params.templates = [ {"templateid": 10106}, {"templateid": 10107} ]
+    case (!req.zxSettings.addHostAllowed):
+      finalMessage = 'Запрещено добавлять любой Host'
+      json_request.id = null
       break
 
-    case (args.body.value.groupid === 11):
-      //json_request.params.templates = [ {"templateid": 10107}, {"templateid": 10108} ]
+    case (hostGroupPassed.length === 0):
+      finalMessage = 'нельзя добавлять в Host Group id '+args.body.value.groupid
+      json_request.id = null
       break
+
+    // Навешиваю Template на определенную Host Group
+    //case (args.body.value.groupid === 9):
+    //  //json_request.params.templates = [ {"templateid": 10106}, {"templateid": 10107} ]
+    //  break
 
     default:
-      // No action for other HostGroups: uncomment below
-      //json_request.id = null
+      // pass
       break
   }
 
@@ -83,7 +97,7 @@ exports.apiAction = function(req, res, next) {
     });
   }
   else {
-    apiTools.apiResJson(res, {code: 202, message: 'API - no actions'}, 202)
+    apiTools.apiResJson(res, {'code': 202, 'message': finalMessage}, 202)
   }
 
 }

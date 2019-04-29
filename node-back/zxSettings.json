@@ -1,0 +1,14 @@
+{
+    "zxUrl"             : "http://zabbix.server.url/api_jsonrpc.php",
+    "zxUser"            : "Admin",
+    "zxPass"            : "zabbix",
+    "delHostAllowed"    : false,
+    "modHostAllowed"    : true,
+    "addHostAllowed"    : true,
+    "hostGroups"        : [
+        {"id":4,    "desc":"Zabbix servers"},
+        {"id":16,   "desc":"Servers"},
+        {"id":17,   "desc":"Switches"},
+        {"id":18,   "desc":"Routers"}
+    ]
+}

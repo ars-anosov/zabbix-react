@@ -38,7 +38,7 @@ exports.apiAction = function(req, res, next) {
         "groupid",
         "name"
       ],
-      //"groupids": [],
+      "groupids": [],
       "filter": {
         "host": []
       }
@@ -46,6 +46,11 @@ exports.apiAction = function(req, res, next) {
     "id": 2,
     "auth": req.myObj.request.auth
   }
+
+  // Только разрешенные группы
+  req.zxSettings.hostGroups.map((row)=>{
+    json_request.params.groupids.push(row.id)
+  })
 
   if (args.group.value) {
     json_request.params.groupids = [ args.group.value ]

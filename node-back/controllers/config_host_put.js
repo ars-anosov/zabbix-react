@@ -11,57 +11,104 @@ exports.apiAction = function(req, res, next) {
   var request             = req.myObj.request.module
   var reqOptions          = req.myObj.request.reqOptions
   
-  var json_request                        = {
+  var json_request = {}
+  var requestBodyJson = {}
+
+
+
+  json_request = {
     "jsonrpc": "2.0",
-    "method": 'host.update',
+    "method": "host.get",
     "params": {
-      "hostid": args.hostid.value,
-      "description": args.body.value.description,
-      "inventory_mode": 0,
-      "inventory": {
-        "notes": args.body.value.inventory.notes
-      }
+      "hostids": args.hostid.value,
+      "output": [
+        "hostid"
+      ],
+      "selectGroups": [
+        "groupid"
+      ],
     },
-    "id": 4,
+    "id": 2,
     "auth": req.myObj.request.auth
   }
 
-  // --------------------------------- //
-  // Own logic for specific HostGroup. //
-  // --------------------------------- //
-  switch (true) {
+  reqOptions.body = JSON.stringify(json_request)
+  console.log(reqOptions)
 
-    case (args.body.value.groupid === 8):
-      json_request.id = null
-      break
+  // request No.1 (check HostGroup for req. HostId)
+  request(reqOptions, function(requestErr, requestRes, requestBody) {
+    
+    requestBodyJson = JSON.parse(requestBody)
+    var hostGroupId = requestBodyJson.result[0].groups[0].groupid
+    console.log('check groupid: '+hostGroupId)
 
-    // Pass all HostGroups
-    default:
-      // pass
-      break
-  }
+    json_request                        = {
+      "jsonrpc": "2.0",
+      "method": 'host.update',
+      "params": {
+        "hostid": args.hostid.value,
+        "description": args.body.value.description,
+        "inventory_mode": 0,
+        "inventory": {
+          "notes": args.body.value.inventory.notes
+        }
+      },
+      "id": 4,
+      "auth": req.myObj.request.auth
+    }
+
+    // --------------------------------- //
+    // Own logic for specific HostGroup. //
+    // --------------------------------- //
+    var hostGroupPassed = []
+    //hostGroupPassed = apiTools.arrExistsByPropName([{'id': parseInt(hostGroupId)}], 'id', req.zxSettings.hostGroups)
+    req.zxSettings.hostGroups.map((row)=>{
+      if (row.id === parseInt(hostGroupId)) { hostGroupPassed = row }
+    })
+    console.log(hostGroupPassed)
+
+    var finalMessage = 'API - no actions'
+    switch (true) {
+
+      case (!req.zxSettings.modHostAllowed):
+        finalMessage = 'Запрещено изменять любой Host'
+        json_request.id = null
+        break
+
+      case (hostGroupPassed.length === 0):
+        finalMessage = 'нельзя изменять в Host Group id '+hostGroupId
+        json_request.id = null
+        break
+
+      // Pass all HostGroups
+      default:
+        // pass
+        break
+    }
 
 
 
 
-  if (json_request.id) {
-    reqOptions.body = JSON.stringify(json_request)
-    console.log(reqOptions)
+    if (json_request.id) {
+      reqOptions.body = JSON.stringify(json_request)
+      console.log(reqOptions)
 
-    request(reqOptions, function(requestErr, requestRes, requestBody) {
-      var requestBodyJson = JSON.parse(requestBody)
-      console.log(requestBodyJson)
+      request(reqOptions, function(requestErr, requestRes, requestBody) {
+        var requestBodyJson = JSON.parse(requestBody)
+        console.log(requestBodyJson)
 
-      if (requestBodyJson.result) {
-        apiTools.apiResJson(res, {code: 200, message: 'hostid: '+requestBodyJson.result.hostids[0]}, 200)
-      }
-      else {
-        apiTools.apiResJson(res, {code: 202, message: 'Zabbix error: '+requestBodyJson.error.data}, 202)
-      }
-    });
-  }
-  else {
-    apiTools.apiResJson(res, {code: 202, message: 'API - no actions'}, 202)
-  }
+        if (requestBodyJson.result) {
+          apiTools.apiResJson(res, {code: 200, message: 'updated hostid: '+requestBodyJson.result.hostids[0]}, 200)
+        }
+        else {
+          apiTools.apiResJson(res, {code: 202, message: 'Zabbix error: '+requestBodyJson.error.data}, 202)
+        }
+      });
+    }
+    else {
+      apiTools.apiResJson(res, {'code': 202, 'message': finalMessage}, 202)
+    }
+
+  })
 
 }

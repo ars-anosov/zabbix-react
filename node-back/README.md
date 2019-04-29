@@ -1,53 +1,65 @@
 # zabbix-reactor-node
 
 ## Обзор
-- Nodejs сервер собран при помощи [swagger-codegen](https://github.com/swagger-api/swagger-codegen).
 - Для общения с Zabbix-API использует модуль [request](https://github.com/request/request).
 
-## Строим среду разработки
-
-### Node:8
+## Container NodeJS
 В Docker-контейнер будет прокинута директория "node-back": переходим в нее.
 ```
 cd node-back
 ```
 
-Проверяем поле "host" в [api/zabbix-api.yaml](https://github.com/ars-anosov/zabbix-react/blob/master/node-back/api/zabbix-api.yaml)
-
-Если запускаем на своем машине
+### API
+Проверяем поле "host" в спецификации [api/zabbix-api.yaml](https://github.com/ars-anosov/zabbix-react/blob/master/node-back/api/zabbix-api.yaml)
 ```yaml
-host: 'localhost:8002'
+host: '192.168.13.97:8002'
 ```
 
+Правим под свой IP
+```bash
+sed -i -e "s/host: '192.168.13.97:8002'/host: 'ADD.IP.ADDR.HERE:8002'/" api/zabbix-api.yaml
+```
+
+### Настройки коннекта с ZabbixServer
+Все в [zxSettings.json](https://github.com/ars-anosov/zabbix-react/blob/master/node-back/zxSettings.json)
+```json
+{
+    "zxUrl"             : "http://zabbix.server.url/api_jsonrpc.php",
+    "zxUser"            : "Admin",
+    "zxPass"            : "zabbix",
+    "delHostAllowed"    : false,
+    "modHostAllowed"    : true,
+    "addHostAllowed"    : true,
+    "hostGroups"        : [
+        {"id":4,    "desc":"Zabbix servers"},
+        {"id":15,   "desc":"my own"}
+    ]
+}
+```
+- **zxUrl** - Старые версии заббикса могут принимать запросы на другом URL. Смотрим [Zabbix doc.](https://www.zabbix.com/documentation/2.2/ru/manual/api)
+- **zxUser/Pass** - Zabbix пользователь
+- **hostGroups** - id "Host groups" с Zabbix-сервера с которыми разрешено работать (desc - просто описание для себя)
+- **del/mod/addHostAllowed** - разрешено ли удалять/менять/добавлять Host на Zabbiz
+
+Настраиваем под себя
+
+### Start
 Запускаем "zabbix-reactor-node"
 ```
-docker run \
+sudo docker run \
   --name zabbix-reactor-node \
   -v $PWD:/zabbix-reactor-node \
   -w /zabbix-reactor-node \
   --publish=8002:8002 \
-  --env="ZX_URL=http://zabbix-server.react.com.ru/api_jsonrpc.php" \
-  --env="ZX_USER=react_user" \
-  --env="ZX_PASS=react_passwd" \
   -it \
-  node:8 bash
+  node:10 bash
 ```
-Старые версии заббикса могут принимать запросы на другом URL. Смотрим [Zabbix doc.](https://www.zabbix.com/documentation/2.2/ru/manual/api)
+
 
 Дальше все действия внутри контейнера.
 
 ```
 npm install
-node index.js $ZX_URL $ZX_USER $ZX_PASS
+node index.js zxSettings.json
 ```
 Выскочить из контейнера : Ctrl+P+Q
-
-### Zabbix Настройки
-Необходимо создать пользователя "react_user"
-
-1. Administration/User groups - добавляем группу пользователей "react_user_group"
-2. Administration/User groups/Permissions - добавляем Host groups, с которыми будет позволено работать "react_user". Выставляем Read-write.
-3. Administration/Users - добавляем пользователя, включаем в группу пользователей созданную в пп.1
-4. Administration/Users/Permissions - User type выставляем "Zabbix Admin"
-
-Пользователь "react_user" для zabbix-reactor готов.

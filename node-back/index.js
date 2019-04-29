@@ -1,28 +1,55 @@
 'use strict';
 
-// Arguments ---------------------------------------------
-var nodePath  = process.argv[0]
-var appPath   = process.argv[1]
-var zxUrl     = process.argv[2]
-var zxUser    = process.argv[3]
-var zxPass    = typeof process.argv[4] === 'undefined' ? '' : process.argv[4]
+// arg
+if (process.argv.length < 3) {
+  console.log("Usage: node index.js zxSttings.json")
+  process.exit();
+}
 
-console.log('Zabbix URL:      '+zxUrl)
-console.log('Zabbix User:     '+zxUser)
-console.log('Zabbix Password: '+zxPass)
-console.log()
-var aaa_handle = require('./sub_modules/aaa_handle')
+// fs
+const fs          = require('fs')
+const path        = require('path')
 
-
-var fs = require('fs'),
-    path = require('path')
-
+// swagger
 var app = require('connect')()
 var swaggerTools = require('swagger-tools')
 var jsyaml = require('js-yaml')
 
 var http = require('http')
 var serverPort = 8002
+
+// auth
+var aaa_handle = require('./sub_modules/aaa_handle')
+
+// args addon
+//const nodePath    = process.argv[0]
+//const appPath     = process.argv[1]
+const zxSettingsFilePath = path.join(__dirname, process.argv[2])
+
+// Глобальный объект, будет асинхронно мутировать:
+const localDb           = {
+  'info'			    : 'local base for zabbix-react',
+  'apiUrl'        : 'take it from swaggerDoc const later',
+  'zxSettings'    : {},
+}
+// JSON Settings for dial
+try { localDb.zxSettings = JSON.parse( fs.readFileSync(zxSettingsFilePath, 'utf8') ) }
+catch(err) {
+  if (err) throw err
+}
+
+const zxUrl     = localDb.zxSettings.zxUrl
+const zxUser    = localDb.zxSettings.zxUser
+const zxPass    = localDb.zxSettings.zxPass
+console.log('|-----------------|')
+console.log('|\x1b[36m Start ARGUMENTS \x1b[0m|')
+console.log('|-----------------|')
+console.log('localDb:')
+console.log(localDb)
+console.log()
+
+
+
 
 //var https = require('https');
 //var httpsServerPort = 8002;
@@ -44,6 +71,7 @@ var options = {
 // The Swagger document (require it, build it programmatically, fetch it from a URL, ...)
 var spec = fs.readFileSync(path.join(__dirname,'api/zabbix-api.yaml'), 'utf8');
 var swaggerDoc = jsyaml.safeLoad(spec);
+localDb.apiUrl      = 'http://'+swaggerDoc.host
 
 
 
@@ -103,8 +131,9 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
         'reqOptions': reqOptions,
         'auth': zxAuth
       },
-      'aaa': null
+      'aaa': null,
     };
+    req['zxSettings']              = localDb.zxSettings
     next();
   });
 
@@ -208,7 +237,12 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
   // Работаю с модулем http, https ==================================
   // Start the server
   http.createServer(app).listen(serverPort, function () {
-    console.log('Swagger http started on port '+serverPort);
+    console.log('|------------------------|')
+    console.log('|\x1b[36m Zabbix REACTOR started \x1b[0m|')
+    console.log('|------------------------|')
+    console.log('  Swagger-UI: '+localDb.apiUrl+'/spec-ui/')
+    console.log()
+    console.log()
   });
 
   //https.createServer(httpsOptions, app).listen(httpsServerPort, function () {
